@@ -1,0 +1,152 @@
+<script>
+(function gtm_initAttr() {
+
+    // ------------VARS------------
+    var toplevel_hostname = '[DOMAIN]'; // change this to your site's top-level hostname
+    var referrer = document.referrer;
+    var referrer_hostname = document.referrer.split('/')[2];
+    var referral_exclusion = '[REFERRAL_DOMAIN_1],[REFERRAL_DOMAIN_2]'; // Comma-separated list of domains whose referral we want to treat as direct
+    var page_hostname = document.location.hostname;
+    var url = window.location.href;
+    var gtm_attr_data = '';
+    var hours = 720; // set the cookie lifetime in hours
+    var expiry = new Date();
+    expiry.setTime(expiry.getTime() + (hours * 60 * 60 * 1000)); // expire after n hour(s)
+    //
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~ DO NOT EDIT ANYTHING BELOW THIS POINT ~~~
+    // ~~~           ON PAIN OF DEATH            ~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //
+    // ------------------------BEGIN-------------------------
+    // Check if gtm_attr already exists
+        try {
+            // Check for relevant URL Query String Parameters (only UTMs and gclid, gclsrc, wbraid, gad_source, fbclid and msclkid are covered here)
+            if (/utm_|gclid|gclsrc|wbraid|gad_source|fbclid|msclkid/gi.test(url)) {
+                var url_search_params = url.split('?')[1].toString().split('&');
+                var utm_obj = {
+                    utms: {
+                        utm_source: '',
+                        utm_medium: '',
+                        utm_campaign: '',
+                        utm_content: '',
+                        utm_term: ''
+                    },
+                    google: {
+                        gclid: '',
+                        gclsrc: '',
+                        wbraid: '',
+                        gad_source: ''
+                    },
+                    meta: {
+                        fbclid: ''
+                    },
+                    microsoft: {
+                        msclkid: ''
+                    },
+                    misc: {}
+                };
+
+                for (var i = 0; i < url_search_params.length; i++) {
+                    if (/utm_source/gi.test(url_search_params[i])) {
+                        utm_obj.utms.utm_source = decodeURIComponent(url_search_params[i].split('=')[1].toString()) || ''; // UTM source value
+                    } else if (/utm_medium/gi.test(url_search_params[i])) {
+                        utm_obj.utms.utm_medium = decodeURIComponent(url_search_params[i].split('=')[1].toString()) || ''; // UTM medium value
+                    } else if (/utm_campaign/gi.test(url_search_params[i])) {
+                        utm_obj.utms.utm_campaign = decodeURIComponent(url_search_params[i].split('=')[1].toString()) || ''; // UTM campaign value
+                    } else if (/utm_content/gi.test(url_search_params[i])) {
+                        utm_obj.utms.utm_content = decodeURIComponent(url_search_params[i].split('=')[1].toString()) || ''; // UTM content value
+                    } else if (/utm_term/gi.test(url_search_params[i])) {
+                        utm_obj.utms.utm_term = decodeURIComponent(url_search_params[i].split('=')[1].toString()) || ''; // UTM term value
+                    } else if (/gclid/gi.test(url_search_params[i])) {
+                        utm_obj.google.gclid = url_search_params[i].split('=')[1].toString() || ''; // GCLID value
+                    } else if (/gclsrc/gi.test(url_search_params[i])) {
+                        utm_obj.google.gclsrc = url_search_params[i].split('=')[1].toString() || ''; // GCLSRC value
+                    } else if (/wbraid/gi.test(url_search_params[i])) {
+                        utm_obj.google.wbraid = url_search_params[i].split('=')[1].toString() || ''; // WBRAID value
+                    } else if (/gad_source/gi.test(url_search_params[i])) {
+                        utm_obj.google.gad_source = url_search_params[i].split('=')[1].toString() || ''; // GAD_SOURCE value
+                    } else if (/fbclid/gi.test(url_search_params[i])) {
+                        utm_obj.meta.fbclid = url_search_params[i].split('=')[1].toString() || ''; // FBCLID value
+                    } else if (/msclkid/gi.test(url_search_params[i])) {
+                        utm_obj.microsoft.msclkid = url_search_params[i].split('=')[1].toString() || ''; // MSCLKID value
+                    } else {
+                        var temp_key = decodeURIComponent(url_search_params[i].split('=')[0].toString());
+                        var temp_value = decodeURIComponent(url_search_params[i].split('=')[1].toString());
+                        utm_obj.misc[temp_key] = temp_value; // MISC value
+                        console.warn('GTM Source/Medium - Warning - Unexpected query string parameter detected: ' + temp_key); // Unexpected UTM or URL query string params
+                    }
+                }
+
+                // Format gtm_attr_data: [{MEDIUM}|{SOURCE}|{CAMPAIGN}|{CONTENT}|{TERM}|{CLICK ID}]
+                if ((utm_obj.google.gclid || utm_obj.google.gclsrc || utm_obj.google.wbraid || utm_obj.google.gad_source) && !utm_obj.utms.utm_source && !utm_obj.utms.utm_medium) {
+                    gtm_attr_data =  'cpc|google|' + (utm_obj.utms.utm_campaign || '') + '|' + (utm_obj.utms.utm_content || '') + '|' + (utm_obj.utms.utm_term || '') + '|' + (utm_obj.google.gclid || utm_obj.google.gclsrc || utm_obj.google.wbraid || utm_obj.google.gad_source || '');
+                } else if (utm_obj.meta.fbclid && !utm_obj.utms.utm_source && !utm_obj.utms.utm_medium) {
+                    gtm_attr_data =  'cpc|meta|' + (utm_obj.utms.utm_campaign || '') + '|' + (utm_obj.utms.utm_content || '') + '|' + (utm_obj.utms.utm_term || '') + '|' + (utm_obj.meta.fbclid || '');
+                } else if (utm_obj.microsoft.msclkid && !utm_obj.utms.utm_source && !utm_obj.utms.utm_medium) {
+                    gtm_attr_data =  'cpc|microsoft|' + (utm_obj.utms.utm_campaign || '') + '|' + (utm_obj.utms.utm_content || '') + '|' + (utm_obj.utms.utm_term || '') + '|' + (utm_obj.microsoft.msclkid || '');
+                } else {
+                    gtm_attr_data =  (utm_obj.utms.utm_medium || '') + '|' + (utm_obj.utms.utm_source || '') + '|' + (utm_obj.utms.utm_campaign || '') + '|' + (utm_obj.utms.utm_content || '') + '|' + (utm_obj.utms.utm_term || '') + '|' + (utm_obj.google.gclid || utm_obj.google.gclsrc || utm_obj.google.wbraid || utm_obj.google.gad_source || utm_obj.meta.fbclid || utm_obj.microsoft.msclkid || '');
+                }
+            }
+            // -------------------------- END OF UTM / URL QUERY CHECKS --------------------------
+            // Check if referrer hostname is not the same as current page hostname
+            else if (referrer_hostname !== page_hostname) {
+                // Check if referrer is empty
+                if (/^\s*$/.test(referrer)) {
+                    gtm_attr_data = '(none)|(direct)||||';
+                }
+
+                // Check if referrer is a known search engine
+                else if (/360\.cn|about|alice(adsl)?|alltheweb|altavista|aol|ask|auone|avg|babylon|baidu|biglobe|bing|centrum|comcast|conduit|cnn|daum|duckduckgo|ecosia|ekolay|eniro|globo|go\.mail\.ru|www\.google|goo\.ne|haosou|incredimail|kvasir|live|lycos|mamma|msn|mynet|najdi|naver|netscape|onet|ozu|rakuten|rambler|search-results|search\.smt\.docomo|sesam|seznam|so\.com|sogou|startsiden|szukacz|terra|tut\.by|ukr|virgilio|voila|wp\.pl|yahoo|yam|yandex/gi.test(document.referrer)) {
+                    gtm_attr_data = 'organic|' + referrer_hostname + '||||';
+                }
+
+                // Anything else is a referral
+                else {
+                    // Check if the referrer is ignored
+                    var matched = 0;
+                    var list = referral_exclusion.split(',');
+                    for (var i = 0; i < list.length; i++) {
+                        if (referrer.indexOf(list[i]) > -1) {
+                            matched++;
+                        }
+                    }
+
+                    if (matched > 0) { // Matched the exclusion list
+                        gtm_attr_data = '(none)|(direct)|(referral_excluded_direct)|||';
+                    } else { // No matches found - not ignored
+                        gtm_attr_data = 'referral|' + referrer + '||||';
+                    }
+                }
+            } // Otherwise the traffic is a self-referral or invalid
+            else {
+                gtm_attr_data = 'invalid/self-referral';
+            }
+            // Output result if valid and write the cookie
+            
+            if(/gtm_attr/gi.test(document.cookie) && (gtm_attr_data === '(none)|(direct)||||' || gtm_attr_data === '(none)|(direct)|(referral_excluded_direct)|||')) {
+                        // Reset cookie expiry date if cookie already exists
+                var get_cookie = '';
+                var new_expiry = new Date();
+                new_expiry.setTime(new_expiry.getTime() + (hours * 60 * 60 * 1000));
+                for (i = 0; i < document.cookie.split(';').length; i++) {
+                    if (/gtm_attr/gi.test(document.cookie.split(';')[i])) {
+                        get_cookie = document.cookie.split(';')[i].trim();
+                    }
+                }
+                // Re-write the cookie with new expiry date
+                document.cookie = get_cookie + ';expires=' + new_expiry + ';domain=' + toplevel_hostname + '; path=/;';
+                console.log('%c 🍪 ⚡ gtm_attr cookie expiry updated!', 'background: #0d0208; color: #ffc300');
+            } else if (gtm_attr_data != 'invalid/self-referral') {
+                document.cookie = 'gtm_attr=' + gtm_attr_data + ";expires=" + expiry + ';domain=' + toplevel_hostname + '; path=/;';
+                console.log('%c 🍪 ✅ gtm_attr cookie set! ', 'background: #0d0208; color: #00ff41');
+                return gtm_attr_data;
+            } else {
+                throw '🍪 ❌ gtm_attr cookie not set - either invalid source or self-referral';
+            }
+        } catch (e) {
+            console.error('GTM Attribution - Error: ' + e);
+        }
+}());
+</script>
