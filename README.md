@@ -114,9 +114,9 @@ Split `[5]` by `:` to isolate the click ID type and value.
 
 ---
 
-# 🤝 About Data to Value
+# 🟦 About Data to Value
 
-Built and maintained by myself and the team at [Data to Value](https://www.datatovalue.com) — your data activation partner helping marketing teams transform your into predictable revenue growth.
+Built and maintained by myself and the team at [Data to Value](https://www.datatovalue.com) — your data activation partner helping marketing teams transform data into predictable revenue and growth.
 
 ---
 
