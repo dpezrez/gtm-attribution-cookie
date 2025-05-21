@@ -2,6 +2,8 @@
 
 This Google Tag Manager (GTM) **Custom Template** sets a first-party cookie to capture and persist attribution data across sessions. It captures UTM parameters and common advertising click IDs, formats them into a single cookie value, and stores it for long-term use.
 
+Built by [Daniel Perry-Reed](https://www.linkedin.com/in/danielperryreed/) - marketing analytics specialist at [Data to Value](https://www.datatovalue.com).
+
 ---
 
 # 🚀 How to Use
@@ -10,11 +12,9 @@ This Google Tag Manager (GTM) **Custom Template** sets a first-party cookie to c
 
 This method lets you skip all manual setup steps. You’ll get the custom template, tag, and supporting variables already configured.
 
-### Steps:
-
 1. **Download the container file**
 
-   * Download the file named: `gtm_attr_container.json` [here](https://github.com/dpezrez/gtm-attribution-cookie/gtm_attr_container.json)
+   * Download the file named: `gtm_attr_container.json` [here](https://github.com/dpezrez/gtm-attribution-cookie/blob/main/gtm_attr_container.json)
 
 2. **Open your GTM Workspace**
 
@@ -33,19 +33,17 @@ This method lets you skip all manual setup steps. You’ll get the custom templa
 
 ---
 
-## 🛠 Manual Setup (Step-by-Step)
+## 🛠 Option 2: Manual Setup
 
 Follow these steps if you're manually setting up the attribution cookie template in GTM:
 
-### 1. Add the Custom Template
+### 1. Add the Custom Template Code
 
 * Open GTM > Templates
 
 * Click **New** under Tag Templates
 
-* Paste in the JavaScript code from this repo (see `/template/gtm_attr_template.js`)
-
-* Configure the required permissions as shown below:
+* Paste in the JavaScript code from`/gtm_attr_template.js` [here](https://github.com/dpezrez/gtm-attribution-cookie/blob/main/gtm_attr_template.js)
 
 ### 2. Set Template Permissions
 
@@ -79,7 +77,19 @@ In the template editor, configure the required permissions as shown below:
 * Go to **Variables** > New > Variable Type: **1st Party Cookie**
 * Cookie name: `gtm_attr` (or whatever name you are using)
 
-### 5. Create JS Variables to Read Values
+### 5. Create the Tag
+
+* Go to **Tags** > New
+
+* Choose your custom template
+
+* Set trigger to **All Pages** (or Initialization, or cookie banner consent update, etc.)
+
+* Set your consent dependencies
+
+* Save and publish
+
+### 6. Create JS Variables to Read Values (as needed)
 
 For example, to extract `utm_source`:
 
@@ -102,25 +112,11 @@ Use index references:
 
 Split `[5]` by `:` to isolate the click ID type and value.
 
-### 6. Create the Tag
-
-* Go to **Tags** > New
-
-* Choose your custom template
-
-* Set trigger to **All Pages** (or Initialization, or cookie banner consent update, etc.)
-
-* Set your consent dependencies
-
-* Save and publish
-
 ---
 
 # 🤝 About Data to Value
 
-Built and maintained by the team at [Data to Value](https://www.datatovalue.com) — a digital analytics consultancy helping teams turn marketing and product data into actionable insights.
-
-> Need help with your analytics setup or GTM implementation? Get in touch via [datatovalue.com](https://www.datatovalue.com).
+Built and maintained by myself and the team at [Data to Value](https://www.datatovalue.com) — your data activation partner helping marketing teams transform your into predictable revenue growth.
 
 ---
 
