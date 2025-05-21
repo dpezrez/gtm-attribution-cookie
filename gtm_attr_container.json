@@ -1,6 +1,6 @@
 {
     "exportFormatVersion": 2,
-    "exportTime": "2025-05-21 10:43:54",
+    "exportTime": "2025-05-21 10:45:25",
     "containerVersion": {
         "path": "accounts/6251493524/containers/196477180/versions/0",
         "accountId": "6251493524",
@@ -37,6 +37,47 @@
                 "GTM-M3GW2362"
             ]
         },
+        "tag": [
+            {
+                "accountId": "6251493524",
+                "containerId": "196477180",
+                "tagId": "30",
+                "name": "GTM Attribution Cookie",
+                "type": "cvt_196477180_29",
+                "parameter": [
+                    {
+                        "type": "BOOLEAN",
+                        "key": "encodeValues",
+                        "value": "false"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "extraClickIds",
+                        "value": "ttclid,twclid,li_fat_id"
+                    }
+                ],
+                "fingerprint": "1747820119800",
+                "firingTriggerId": [
+                    "2147479573"
+                ],
+                "tagFiringOption": "ONCE_PER_EVENT",
+                "monitoringMetadata": {
+                    "type": "MAP"
+                },
+                "consentSettings": {
+                    "consentStatus": "NEEDED",
+                    "consentType": {
+                        "type": "LIST",
+                        "list": [
+                            {
+                                "type": "TEMPLATE",
+                                "value": "analytics_storage"
+                            }
+                        ]
+                    }
+                }
+            }
+        ],
         "variable": [
             {
                 "accountId": "6251493524",
@@ -188,7 +229,7 @@
                 "formatValue": {}
             }
         ],
-        "fingerprint": "1747824234174",
+        "fingerprint": "1747824325824",
         "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/6251493524/containers/196477180/versions/0?apiLink=version",
         "customTemplate": [
             {
