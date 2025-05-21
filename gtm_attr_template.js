@@ -1,3 +1,8 @@
+/*
+Built by Daniel Perry-Reed @ Data to Value
+https://datatovalue.com/
+*/
+
 // === IMPORTS ===
 const log = require('logToConsole');
 const getQueryParam = require('getQueryParameters');
