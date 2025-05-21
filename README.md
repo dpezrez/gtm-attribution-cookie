@@ -1,4 +1,4 @@
-# GTM Custom Template: Attribution Cookie Writer (`gtm_attr`)
+# GTM Attribution Cookie (GTM Tag Template)
 
 This Google Tag Manager (GTM) **Custom Template** sets a first-party cookie to capture and persist attribution data across sessions. It captures UTM parameters and common advertising Click IDs, formats them into a single **JSON object**, and stores it as a cookie for long-term use.
 
