@@ -20,19 +20,6 @@ Built by [Daniel Perry-Reed](https://www.linkedin.com/in/danielperryreed/) – a
 
 ---
 
-## ✅ New in This Version
-
-* Added support for additional UTM parameters:
-  * `utm_id`
-  * `utm_source_platform`
-  * `utm_creative_format`
-  * `utm_marketing_tactic`
-* Added **optional DataLayer push** feature:
-  * Enable a checkbox to push attribution data after storage logic
-  * Configurable event name (default: `gtm_attr`)
-  * Pushes the same JSON structure as cookie/localStorage
-
-
 ## ✅ Changelog
 
 | Version     | Changes |
@@ -47,7 +34,7 @@ Built by [Daniel Perry-Reed](https://www.linkedin.com/in/danielperryreed/) – a
 
 ### 📦 Option 1: Import the Prebuilt GTM Container
 
-This is the fastest way to get started. It includes the custom template, tag, cookie variable, and reader variables.
+This is the fastest way to get started. It includes the custom template, tag, some dataLayer variables, and dataLayer trigger.
 
 1. **Download the container file**  
    📄 [Download `gtm_attr_container.json`](./gtm_attr_container.json)
