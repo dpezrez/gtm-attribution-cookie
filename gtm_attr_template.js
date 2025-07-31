@@ -1,6 +1,7 @@
 /*
 Built by Daniel Perry-Reed @ Data to Value
 https://datatovalue.com/
+v0.2
 */
 
 const log = require('logToConsole');
@@ -8,9 +9,9 @@ const getQueryParam = require('getQueryParameters');
 const setCookie = require('setCookie');
 const getCookieValues = require('getCookieValues');
 const encodeUriComponent = require('encodeUriComponent');
-const decodeUriComponent = require('decodeUriComponent');
 const JSON = require('JSON');
 const localStorage = require('localStorage');
+const createQueue = require('createQueue');
 
 // === Config from template fields ===
 const cookieDomain = data.cookieDomain || 'auto';
@@ -19,31 +20,30 @@ const cookieHours = data.cookieHours * 1 || 720;
 const encodeValues = data.encodeValues === true;
 const logToConsole = data.logMessages === true;
 const enableLocalStorage = data.enableLocalStorage === true;
+const pushToDataLayer = data.pushToDataLayer === true;
+const dataLayerEventName = data.dataLayerEventName || 'gtm_attr';
 
 const extraClickIds = data.extraClickIds ? data.extraClickIds.split(',').map(function (id) { return id.trim(); }) : [];
 
 const maxAge = cookieHours * 60 * 60; // in seconds
+
+// Create safe dataLayer push function
+const dataLayerPush = createQueue('dataLayer');
 
 // === Sync localStorage and cookie if either exists ===
 let existingCookie = getCookieValues(cookieName)[0];
 let existingLocalStorage = localStorage.getItem('gtm_attr');
 
 if (!existingCookie && existingLocalStorage) {
-  // Sync from localStorage to cookie
   setCookie(cookieName, existingLocalStorage, {
     domain: cookieDomain,
     path: '/',
     'max-age': maxAge
   }, false);
-  if (logToConsole) {
-    log('🔄 Synced from local storage (gtm_attr) to cookie (' + cookieName + '):', existingLocalStorage);
-  }
+  if (logToConsole) log('🔄 Synced from localStorage to cookie:', existingLocalStorage);
 } else if (!existingLocalStorage && existingCookie && enableLocalStorage) {
-  // Sync from cookie to localStorage
   localStorage.setItem('gtm_attr', existingCookie);
-  if (logToConsole) {
-    log('🔄 Synced from cookie (' + cookieName + ') to local storage (gtm_attr):', existingCookie);
-  }
+  if (logToConsole) log('🔄 Synced from cookie to localStorage:', existingCookie);
 }
 
 // === Gather attribution parameters from URL ===
@@ -52,7 +52,11 @@ const attribution = {
   utm_medium: getQueryParam('utm_medium') || '',
   utm_campaign: getQueryParam('utm_campaign') || '',
   utm_content: getQueryParam('utm_content') || '',
-  utm_term: getQueryParam('utm_term') || ''
+  utm_term: getQueryParam('utm_term') || '',
+  utm_id: getQueryParam('utm_id') || '',
+  utm_source_platform: getQueryParam('utm_source_platform') || '',
+  utm_creative_format: getQueryParam('utm_creative_format') || '',
+  utm_marketing_tactic: getQueryParam('utm_marketing_tactic') || ''
 };
 
 // === Detect and store known or custom click IDs ===
@@ -106,13 +110,16 @@ if (encodeValues) {
 var storageValue = JSON.stringify(attribution);
 
 // === Determine if there is data worth storing ===
-var hasData =
-  attribution.utm_source ||
-  attribution.utm_medium ||
-  attribution.utm_campaign ||
-  attribution.utm_content ||
-  attribution.utm_term ||
-  (attribution.click_id && attribution.click_id.value);
+var hasData = false;
+for (var key in attribution) {
+  if (typeof attribution[key] === 'string' && attribution[key]) {
+    hasData = true;
+    break;
+  } else if (typeof attribution[key] === 'object' && attribution[key] !== null && attribution[key].value) {
+    hasData = true;
+    break;
+  }
+}
 
 // === Store data in cookie and localStorage if present ===
 if (hasData) {
@@ -121,17 +128,22 @@ if (hasData) {
     path: '/',
     'max-age': maxAge
   }, false);
+  if (logToConsole) log('🍪 Set cookie "' + cookieName + '":', storageValue);
 
   if (enableLocalStorage) {
     localStorage.setItem('gtm_attr', storageValue);
-    if (logToConsole) {
-      log('📦 Set localStorage gtm_attr:', storageValue);
-    }
+    if (logToConsole) log('📦 Set localStorage key "gtm_attr":', storageValue);
   }
+}
 
-  if (logToConsole) {
-    log('🍪 Set cookie', cookieName + ':', storageValue);
-  }
+// === Push to dataLayer if enabled ===
+if (pushToDataLayer) {
+  const dlData = {
+    event: dataLayerEventName,
+    attribution: attribution
+  };
+  dataLayerPush(dlData);
+  if (logToConsole) log('📤 Pushed to dataLayer:', dlData);
 }
 
 // === Notify GTM of tag success ===
