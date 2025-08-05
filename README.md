@@ -8,15 +8,17 @@ Built by [Daniel Perry-Reed](https://www.linkedin.com/in/danielperryreed/) – a
 
 ## 🚀 What This Does
 
-* Captures UTM parameters:
-  * `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`
-  * **Extended support** for `utm_id`, `utm_source_platform`, `utm_creative_format`, `utm_marketing_tactic`
-* Captures common ad click IDs (`gclid`, `fbclid`, `msclkid`) and optional custom IDs
-* Stores attribution data in a **first-party cookie** (and optionally in `localStorage`)
-* Automatically **syncs between cookie and localStorage** if one is missing
+* Captures **UTM parameters**:
+  * `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`, `utm_id`, `utm_source_platform`, `utm_creative_format`, and `utm_marketing_tactic`
+* Captures common **ad click IDs** `gclid`, `fbclid` and `msclkid`
+  * Optionally add your own custom defined IDs
+* Captures **referrer info** `referrer.full` and `referrer.domain`
+* Stores attribution data in a **first-party cookie**
+  * Optionally stores attribution in **localStorage**
+  * Automatically **syncs between cookie and localStorage** if one is missing
 * Optionally pushes attribution data to the **dataLayer** as a GTM event
-* URL-encodes individual values if needed
-* Debug logging to the console (optional)
+* Optionally **URL-encode** all values
+* Optioanlly logging all actions to the browser console
 
 ---
 
@@ -25,7 +27,8 @@ Built by [Daniel Perry-Reed](https://www.linkedin.com/in/danielperryreed/) – a
 | Version     | Changes |
 |-------------|---------|
 | **v0.1** | - Initial release with support for core UTM parameters (`utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, and `utm_term`) <br> - Captured core click IDs (`gclid`, `fbclid`, `msclkid`) with option to add in custom list <br> - Optional localStorage backup with cookie-localStorage sync functionality <br> - Advanced options for overriding cookie settings <br> - Optional browser console logs |
-| **v0.2 (current)** | - Added support for additional UTM parameters (`utm_id`, `utm_source_platform`, `utm_creative_format`, `utm_marketing_tactic`) <br> - Added optional DataLayer push feature (with configurable event name) |
+| **v0.2** | - Added support for additional UTM parameters (`utm_id`, `utm_source_platform`, `utm_creative_format`, `utm_marketing_tactic`) <br> - Added optional DataLayer push feature (with configurable event name) |
+| **v0.3 (current)** | - Added support for capturing referrer info (`referrer.full` and `referrer.domain`) <br> - Added optional attribution update on referrers with no UTMs or Click IDs in the URL |
 | **future plans** | - Optional custom mapping for traffic source/medium by click ID <br> - TBC, let me know! |
 
 ---
@@ -37,7 +40,7 @@ Built by [Daniel Perry-Reed](https://www.linkedin.com/in/danielperryreed/) – a
 This is the fastest way to get started. It includes the custom template, tag, some dataLayer variables, and dataLayer trigger.
 
 1. **Download the container file**  
-   📄 [Download `gtm_attr_container.json`](./gtm_attr_container.json)
+   📄 Download [`gtm_attr_container.json`](./gtm_attr_container.json)
 
 2. **Import into GTM**
    * Go to **GTM > Admin > Import Container**
@@ -60,17 +63,20 @@ This is the fastest way to get started. It includes the custom template, tag, so
 
 #### 2. Configure Template Fields
 
-| Field Name            | Type     | Description                                                                 |
-|-----------------------|----------|-----------------------------------------------------------------------------|
-| `cookieName`          | Text     | Name of the cookie (default: `gtm_attr`)                                   |
-| `cookieDomain`        | Text     | Domain for the cookie (default: `auto`)                                    |
-| `cookieHours`         | Text     | Cookie lifetime in hours (default: `720`)                                  |
-| `extraClickIds`       | Text     | Comma-separated custom click ID keys (e.g. `ttclid,li_fat_id`)             |
-| `encodeValues`        | Checkbox | URL-encode attribution values                                               |
-| `enableLocalStorage`  | Checkbox | Store attribution in localStorage                                           |
-| `pushToDataLayer`     | Checkbox | Push attribution object to dataLayer as an event                           |
-| `dataLayerEventName`  | Text     | Event name for DataLayer push (default: `gtm_attr`; shown only if enabled) |
-| `logMessages`         | Checkbox | Enable console logging for debugging                                        |
+| Field Name                      | Type     | Description                                                                 |
+|--------------------------------|----------|-----------------------------------------------------------------------------|
+| `cookieName`                   | Text     | Name of the cookie (default: `gtm_attr`)                                   |
+| `cookieDomain`                 | Text     | Domain for the cookie (default: `auto`)                                    |
+| `cookieHours`                  | Text     | Cookie lifetime in hours (default: `720`)                                  |
+| `extraClickIds`                | Text     | Comma-separated custom click ID keys                                       |
+| `encodeValues`                 | Checkbox | URL-encode attribution values                                              |
+| `enableLocalStorage`           | Checkbox | Store attribution in localStorage                                          |
+| `pushToDataLayer`              | Checkbox | Push attribution object to dataLayer as an event                           |
+| `dataLayerEventName`           | Text     | Event name for DataLayer push (default: `gtm_attr`)                        |
+| `overrideOnNewReferrerDomain`  | Checkbox | If enabled, JSON resets on new referrer domain (unless ignored)            |
+| `ignoreDomains`                | Text     | Comma-separated list of domains to ignore (no update if referrer matches) |
+| `logMessages`                  | Checkbox | Enable console logging for debugging                                       |
+
 
 ---
 
@@ -78,11 +84,14 @@ This is the fastest way to get started. It includes the custom template, tag, so
 
 Ensure your template requests:
 
-* `setCookie`, `getCookieValues`
-* `localStorage` (read/write for key `gtm_attr`)
+* `Set a cookie` and `Reads cookie value(s)` (any)
+* `Access local storage` (read/write for key `gtm_attr`)
+* `Access global variables` (dataLayer read/write)
 * `getQueryParameters`
 * `access_globals` for `dataLayer` (read/write)
-* `logToConsole` (optional)
+* `Log to console` (always log)
+* `Reads URL` (any)
+* `Reads Referrer URL` (any)
 
 ---
 
@@ -112,8 +121,6 @@ Ensure your template requests:
   "utm_source": "google",
   "utm_medium": "cpc",
   "utm_campaign": "spring_sale",
-  "utm_content": "",
-  "utm_term": "",
   "utm_id": "12345",
   "utm_source_platform": "google_ads",
   "utm_creative_format": "responsive",
@@ -121,6 +128,10 @@ Ensure your template requests:
   "click_id": {
     "type": "gclid",
     "value": "abc123"
+  },
+  "referrer": {
+    "full": "https://example.com/page",
+    "domain": "example.com"
   }
 }
 ```
